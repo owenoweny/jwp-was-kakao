@@ -27,7 +27,7 @@ public class HttpRequest {
     }
 
     private void validateUri(String uri) {
-        if (!uri.startsWith("/") || !uri.startsWith("./")) {
+        if (!uri.startsWith("/")) {
             throw new HttpRequestFormatException("uri 형식이 올바르지 않습니다.");
         }
     }

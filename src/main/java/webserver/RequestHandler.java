@@ -2,9 +2,11 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.FileIoUtils;
 import utils.IOUtils;
 
 public class RequestHandler implements Runnable {
@@ -21,15 +23,17 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             HttpRequest httpRequest = HttpHeaderParsingUtils.parse(new BufferedReader(new InputStreamReader(in)));
+            ;
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello World".getBytes();
+            byte[] body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUri());
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 
