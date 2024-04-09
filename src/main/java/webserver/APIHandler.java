@@ -54,6 +54,6 @@ public class APIHandler {
         }
         DataBase.addUser(new User(userId, password, name, email));
 
-        return HttpResponse.found();
+        return HttpResponse.found("http://localhost:8080/index.html");
     }
 }

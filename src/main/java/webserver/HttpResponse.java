@@ -1,5 +1,8 @@
 package webserver;
 
+import enums.MIME;
+import enums.StatusCode;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
@@ -10,9 +13,9 @@ public class HttpResponse {
     private Map<String, String> headers;
 //    private MIME mime;
 
-    public static HttpResponse found() {
+    public static HttpResponse found(String redirectURI) {
         //302일 때 응답 헤더에 필요한 값은??
-        return new HttpResponse(StatusCode.FOUND, new byte[0], Map.of());
+        return new HttpResponse(StatusCode.FOUND, new byte[0], Map.of("Location", redirectURI));
     }
 
     public static HttpResponse staticResource(byte[] body, MIME mime) {
