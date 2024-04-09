@@ -11,7 +11,7 @@ class FormUrlEncodedParsingStrategyTest {
     void form_urlEncoded_타입을_파싱한다() {
         String body = "userId=cu&password=password&name=%EC%9D%B4%EB%8F%99%EA%B7%9C&email=brainbackdoor%40gmail.com";
 
-        Map<String, Object> parsed = new FormUrlEncodedParsingStrategy().parse(body);
+        Map<String, String> parsed = new FormUrlEncodedParsingStrategy().parse(body);
 
         assertThat(parsed)
                 .contains(Map.entry("password", "password"))

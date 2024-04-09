@@ -19,7 +19,7 @@ public class HttpBodyParser {
         throw new IllegalArgumentException("지원되지 않는 컨텐츠타입입니다.");
     }
 
-    public Map<String, Object> parse(String bodyString) {
+    public Map<String, String> parse(String bodyString) {
         return httpBodyParsingStrategy.parse(bodyString);
     }
 }

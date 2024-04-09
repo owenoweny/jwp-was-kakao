@@ -18,20 +18,20 @@ public class HttpHeaderParsingUtils {
         String protocol = f[2];
 
         String line;
-        Map<String, Object> headers = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
 
         while (!"".equals(line = bufferedReader.readLine()) && line != null) {
             String[] header = line.split(": ");
             headers.put(header[0], header[1]);
         }
 
-        Map<String, Object> body = Map.of();
+        Map<String, String> body = Map.of();
 
         // (body의 존재 - Content-Type 필드의 존재) -> 필요충분조건?? 표준에선 있어야댐
         if (headers.containsKey("Content-Type") && headers.containsKey("Content-Length")) {
             //TODO: Content-Length 정수 파싱 예외 처리...
             String contentType = String.valueOf(headers.get("Content-Type"));
-            int contentLength = (int) headers.get("Content-Length");
+            int contentLength = Integer.parseInt(headers.get("Content-Length"));
             String bodyString = IOUtils.readData(bufferedReader, contentLength);
             body = HttpBodyParser.from(contentType).parse(bodyString);
         }
@@ -54,14 +54,14 @@ public class HttpHeaderParsingUtils {
         String protocol = f[2];
 
         String tmp;
-        Map<String, Object> headers = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
 
         while (stringTokenizer.hasMoreTokens() && !(tmp = stringTokenizer.nextToken()).isEmpty()) {
             String[] header = tmp.split(": ");
             headers.put(header[0], header[1]);
         }
 
-        Map<String, Object> body = Map.of();
+        Map<String, String> body = Map.of();
         
         // (body의 존재 - Content-Type 필드의 존재) -> 필요충분조건?? 표준에선 있어야댐
         if (headers.containsKey("Content-Type")) {

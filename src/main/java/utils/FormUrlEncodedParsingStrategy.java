@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 
 public class FormUrlEncodedParsingStrategy implements HttpBodyParsingStrategy {
     @Override
-    public Map<String, Object> parse(String body) {
+    public Map<String, String> parse(String body) {
         if (body.isBlank()) {
             return Map.of();
         }
 
-        Map<String, Object> map;
+        Map<String, String> map;
         try {
             map = Arrays.stream(body.split("&"))
                     .map(s -> s.split("="))

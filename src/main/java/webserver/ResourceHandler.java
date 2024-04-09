@@ -8,7 +8,8 @@ import java.net.URISyntaxException;
 public class ResourceHandler {
     public HttpResponse handle(HttpRequest httpRequest) {
         String path = "./static";
-        if (httpRequest.getUri().getExtension().get().isTemplate()) {
+        MIME mime = httpRequest.getUri().getExtension().get();
+        if (mime.isTemplate()) {
             path = "./templates";
         }
 
@@ -19,6 +20,6 @@ public class ResourceHandler {
             System.out.println(e);
         }
 
-        return new HttpResponse(StatusCode.OK, body, httpRequest.getUri().getExtension().get());
+        return HttpResponse.staticResource(body, mime);
     }
 }

@@ -8,13 +8,13 @@ public class HttpRequest {
     private final URI uri;
     private final HttpMethod httpMethod;
     private final String protocol;
-    private final Map<String, Object> headers;
-    private final Map<String, Object> body;
+    private final Map<String, String> headers;
+    private final Map<String, String> body;
 
     public HttpRequest(URI uri,
                        HttpMethod httpMethod, String protocol,
-                       Map<String, Object> headers,
-                       Map<String, Object> body) {
+                       Map<String, String> headers,
+                       Map<String, String> body) {
         this.uri = uri;
         this.httpMethod = httpMethod;
         this.protocol = protocol;
@@ -34,8 +34,8 @@ public class HttpRequest {
         private URI uri;
         private String protocol;
         private HttpMethod httpMethod;
-        private Map<String, Object> headers;
-        private Map<String, Object> body;
+        private Map<String, String> headers;
+        private Map<String, String> body;
 
         public Builder uri(URI uri) {
             this.uri = uri;
@@ -52,12 +52,12 @@ public class HttpRequest {
             return this;
         }
 
-        public Builder headers(Map<String, Object> headers) {
+        public Builder headers(Map<String, String> headers) {
             this.headers = headers;
             return this;
         }
 
-        public Builder body(Map<String, Object> body) {
+        public Builder body(Map<String, String> body) {
             this.body = body;
             return this;
         }
@@ -75,7 +75,7 @@ public class HttpRequest {
         return httpMethod;
     }
 
-    public Map<String, Object> getHeaders() {
+    public Map<String, String> getHeaders() {
         return headers;
     }
 
@@ -83,7 +83,7 @@ public class HttpRequest {
         return protocol;
     }
 
-    public Map<String, Object> getBody() {
+    public Map<String, String> getBody() {
         return body;
     }
 }

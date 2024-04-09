@@ -1,13 +1,11 @@
 package webserver;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
-import java.net.URISyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.FileIoUtils;
-import utils.IOUtils;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -34,7 +32,6 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest httpRequest = HttpHeaderParsingUtils.parse(new BufferedReader(new InputStreamReader(in)));
 
-            byte[] body = new byte[1];
             HttpResponse httpResponse;
             if (httpRequest.getUri().getExtension().isEmpty()) {
                 httpResponse = apiHandler.handle(httpRequest);
@@ -44,8 +41,11 @@ public class RequestHandler implements Runnable {
 
             DataOutputStream dos = new DataOutputStream(out);
             httpResponse.send(dos);
+            //TODO: 예외 처리
         } catch (IOException e) {
             logger.error(e.getMessage());
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 }
