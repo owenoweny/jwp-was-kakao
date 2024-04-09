@@ -14,6 +14,15 @@ public class RequestHandler implements Runnable {
 
     private Socket connection;
 
+    private APIHandler apiHandler;
+    private ResourceHandler resourceHandler;
+
+    public RequestHandler(Socket connection, APIHandler apiHandler, ResourceHandler resourceHandler) {
+        this.connection = connection;
+        this.apiHandler = apiHandler;
+        this.resourceHandler = resourceHandler;
+    }
+
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
     }
@@ -25,51 +34,16 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest httpRequest = HttpHeaderParsingUtils.parse(new BufferedReader(new InputStreamReader(in)));
 
-            DataOutputStream dos = new DataOutputStream(out);
             byte[] body = new byte[1];
+            HttpResponse httpResponse;
             if (httpRequest.getUri().getExtension().isEmpty()) {
-                //TODO: 예외 처리
-            } else if (httpRequest.getUri().getExtension().get().isTemplate()) {
-                body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUri().getPath());
+                httpResponse = apiHandler.handle(httpRequest);
             } else {
-                body = FileIoUtils.loadFileFromClasspath("./static" + httpRequest.getUri().getPath());
+                httpResponse = resourceHandler.handle(httpRequest);
             }
 
-            response200Header(dos, body.length, httpRequest.getUri().getExtension().get());
-            responseBody(dos, body);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, MIME contentType) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType.contentType + ";charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
+            DataOutputStream dos = new DataOutputStream(out);
+            httpResponse.send(dos);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
