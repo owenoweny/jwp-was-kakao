@@ -16,6 +16,10 @@ public class HttpRequestParser {
     public static final String HEADER_SEPARATOR = ": ";
     public static final String PARAMETER_EQUAL_SIGN = "=";
     public static final String EXTENSION_SEPARATOR = ".";
+    public static final String CONTENT_TYPE_KEY = "Content-Type";
+    public static final String CONTENT_LENGTH_KEY = "Content-Length";
+    public static final String LOCATION_KEY = "Location";
+
 
     public static HttpRequest parse(BufferedReader bufferedReader) throws IOException {
         String[] requestLine = bufferedReader.readLine().split(SPACE);
@@ -39,9 +43,9 @@ public class HttpRequestParser {
     private static Map<String, String> parseBody(BufferedReader bufferedReader, Map<String, String> headers) throws IOException {
         Map<String, String> body = Map.of();
 
-        if (headers.containsKey("Content-Type") && headers.containsKey("Content-Length")) {
-            String contentType = String.valueOf(headers.get("Content-Type"));
-            int contentLength = Integer.parseInt(headers.get("Content-Length"));
+        if (headers.containsKey(CONTENT_TYPE_KEY) && headers.containsKey(CONTENT_LENGTH_KEY)) {
+            String contentType = String.valueOf(headers.get(CONTENT_TYPE_KEY));
+            int contentLength = Integer.parseInt(headers.get(CONTENT_LENGTH_KEY));
             String bodyString = IOUtils.readData(bufferedReader, contentLength);
             body = HttpBodyParser.from(contentType).parse(bodyString);
         }
@@ -71,7 +75,6 @@ public class HttpRequestParser {
         if (hasExtension(path)) {
             stringURI = removeQuery(stringURI);
             String extension = parseExtension(stringURI);
-            //TODO : 지원하지 않는 MIME인 경우에 대한 예외 처리
             return new URI(path, parameters, MIME.from(extension.toUpperCase()));
         }
         return new URI(path, parameters);
