@@ -35,4 +35,16 @@ public class URI {
             throw new HttpRequestFormatException("uri 형식이 올바르지 않습니다.");
         }
     }
+
+    public String getPath() {
+        return path;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public Optional<MIME> getExtension() {
+        return extension;
+    }
 }

@@ -90,6 +90,7 @@ public class HttpHeaderParsingUtils {
         if (hasExtension(path)) {
             stringURI = removeQuery(stringURI);
             String extension = parseExtension(stringURI);
+            //TODO : 지원하지 않는 MIME인 경우에 대한 예외 처리
             return new URI(path, parameters, MIME.valueOf(extension.toUpperCase()));
         }
         return new URI(path, parameters);

@@ -8,7 +8,10 @@ public enum MIME {
     PNG("image/png"),
     JPG("image/jpeg"),
     TXT("text/plain"),
+    EOT("font/EOT"),
+    SVG("font/SVG"),
     WOFF("font/WOFF"),
+    WOFF2("font/WOFF2"),
     TTF("font/ttf");
 
     public String contentType;

@@ -24,11 +24,18 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest httpRequest = HttpHeaderParsingUtils.parse(new BufferedReader(new InputStreamReader(in)));
-            ;
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUri());
-            response200Header(dos, body.length);
+            byte[] body = new byte[1];
+            if (httpRequest.getUri().getExtension().isEmpty()) {
+                //TODO: 예외 처리
+            } else if (httpRequest.getUri().getExtension().get().isTemplate()) {
+                body = FileIoUtils.loadFileFromClasspath("./templates" + httpRequest.getUri().getPath());
+            } else {
+                body = FileIoUtils.loadFileFromClasspath("./static" + httpRequest.getUri().getPath());
+            }
+
+            response200Header(dos, body.length, httpRequest.getUri().getExtension().get());
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -41,6 +48,17 @@ public class RequestHandler implements Runnable {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, MIME contentType) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: " + contentType.contentType + ";charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
