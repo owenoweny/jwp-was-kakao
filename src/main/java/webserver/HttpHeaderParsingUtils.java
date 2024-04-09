@@ -1,26 +1,20 @@
 package webserver;
 
-import utils.FormUrlEncodedParsingStrategy;
 import utils.HttpBodyParser;
 import utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static webserver.URI.*;
 
 public class HttpHeaderParsingUtils {
     public static HttpRequest parse(BufferedReader bufferedReader) throws IOException {
         String[] f = bufferedReader.readLine().split(" ");
         HttpMethod httpMethod = HttpMethod.valueOf(f[0]);
-        String[] splittedUri = f[1].split("\\?");
-        Map<String, Object> queryString = Map.of();
-        String uri = splittedUri[0];
-
-        if (splittedUri.length == 2) {
-            queryString = new FormUrlEncodedParsingStrategy().parse(splittedUri[1]);
-        }
+        String uriString = f[1];
         String protocol = f[2];
 
         String line;
@@ -43,8 +37,7 @@ public class HttpHeaderParsingUtils {
         }
 
         return new HttpRequest.Builder()
-                .uri(uri)
-                .queryString(queryString)
+                .uri(parseURI(uriString))
                 .body(body)
                 .protocol(protocol)
                 .headers(headers)
@@ -56,13 +49,7 @@ public class HttpHeaderParsingUtils {
         StringTokenizer stringTokenizer = new StringTokenizer(httpRequestString, "\n");
         String[] f = stringTokenizer.nextToken().split(" ");
         HttpMethod httpMethod = HttpMethod.valueOf(f[0]);
-        String[] splittedUri = f[1].split("\\?");
-        Map<String, Object> queryString = Map.of();
-        String uri = splittedUri[0];
-
-        if (splittedUri.length == 2) {
-            queryString = new FormUrlEncodedParsingStrategy().parse(splittedUri[1]);
-        }
+        String uriString = f[1];
 
         String protocol = f[2];
 
@@ -83,14 +70,76 @@ public class HttpHeaderParsingUtils {
         }
 
         return new HttpRequest.Builder()
-                .uri(uri)
-                .queryString(queryString)
+                .uri(parseURI(uriString))
                 .body(body)
                 .protocol(protocol)
                 .headers(headers)
                 .httpMethod(httpMethod)
                 .build();
     }
+
+    private static URI parseURI(String stringURI) {
+        Map<String, String> parameters = new HashMap<>();
+        String path = stringURI;
+
+        if (hasQuery(stringURI)) {
+            int queryStartIndex = stringURI.indexOf(QUERY_SEPARATOR);
+            path = stringURI.substring(0, queryStartIndex);
+            parameters = parseParameters(stringURI);
+        }
+        if (hasExtension(path)) {
+            stringURI = removeQuery(stringURI);
+            String extension = parseExtension(stringURI);
+            return new URI(path, parameters, MIME.valueOf(extension.toUpperCase()));
+        }
+        return new URI(path, parameters);
+    }
+
+    public static Map<String, String> parseParameters(String stringUri) {
+        Map<String, String> parameters = new HashMap<>();
+        int queryStartIndex = stringUri.indexOf(QUERY_SEPARATOR) + 1;
+        String query = stringUri.substring(queryStartIndex);
+
+        List<String> queries = parseStringToList(query, PARAMETER_SEPARATOR);
+
+        for (String line : queries) {
+            String[] parameter = line.split(PARAMETER_EQUAL_SIGN);
+            parameters.put(parameter[0], parameter[1]);
+        }
+        return parameters;
+    }
+
+    private static String parseExtension(String stringURI) {
+        int dotIndex = stringURI.lastIndexOf(EXTENSION_SEPARATOR);
+
+        return stringURI.substring(dotIndex + 1);
+    }
+
+    private static String removeQuery(String path) {
+        int index = path.indexOf("?");
+        String result;
+        if (index != -1) {
+            result = path.substring(0, index);
+        } else {
+            result = path;
+        }
+        return result;
+    }
+
+    private static List<String> parseStringToList(String requestLine, String separator) {
+        String[] requestLineArray = requestLine.split(separator);
+
+        return Arrays.stream(requestLineArray).collect(Collectors.toList());
+    }
+
+    private static boolean hasExtension(String stringURI) {
+        return stringURI.contains(EXTENSION_SEPARATOR);
+    }
+
+    private static boolean hasQuery(String stringURI) {
+        return stringURI.contains(QUERY_SEPARATOR);
+    }
+
 
     //TODO : rename
     public static String body(StringTokenizer st) {
