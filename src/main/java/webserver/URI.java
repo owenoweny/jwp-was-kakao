@@ -40,7 +40,11 @@ public class URI {
         return parameters;
     }
 
-    public Optional<MIME> getExtension() {
-        return extension;
+    public MIME getExtension() {
+        return extension.orElseThrow(() -> new RuntimeException("확장자가 존재하지 않습니다."));
+    }
+
+    public boolean hasExtension() {
+        return extension.isPresent();
     }
 }

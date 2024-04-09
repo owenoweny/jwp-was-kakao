@@ -7,19 +7,13 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class ResourceHandler {
-    public HttpResponse handle(HttpRequest httpRequest) {
+    public HttpResponse handle(HttpRequest httpRequest) throws IOException, URISyntaxException {
         String path = "./static";
-        MIME mime = httpRequest.getUri().getExtension().get();
+        MIME mime = httpRequest.getUri().getExtension();
         if (mime.isTemplate()) {
             path = "./templates";
         }
-
-        byte[] body = new byte[0];
-        try {
-            body = FileIoUtils.loadFileFromClasspath(path + httpRequest.getUri().getPath());
-        } catch (IOException | URISyntaxException e) {
-            System.out.println(e);
-        }
+        byte[] body = FileIoUtils.loadFileFromClasspath(path + httpRequest.getUri().getPath());
 
         return HttpResponse.staticResource(body, mime);
     }
