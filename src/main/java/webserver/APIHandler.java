@@ -17,14 +17,17 @@ public class APIHandler {
         for (HttpMethod httpMethod : HttpMethod.values()) {
             requestMappings.put(httpMethod, new URIHandlerMapping());
         }
-
         Method[] methods = APIHandler.class.getDeclaredMethods();
 
         for (Method method : methods) {
-            if (method.isAnnotationPresent(HandleRequest.class)) {
-                HandleRequest handleRequest = method.getAnnotation(HandleRequest.class);
-                requestMappings.get(handleRequest.httpMethod()).addMapping(handleRequest.path(), method);
-            }
+            add(method);
+        }
+    }
+
+    private static void add(Method method) {
+        if (method.isAnnotationPresent(HandleRequest.class)) {
+            HandleRequest handleRequest = method.getAnnotation(HandleRequest.class);
+            requestMappings.get(handleRequest.httpMethod()).addMapping(handleRequest.path(), method);
         }
     }
 
@@ -32,12 +35,10 @@ public class APIHandler {
         HttpMethod httpMethod = httpRequest.getHttpMethod();
         String path = httpRequest.getUri().getPath();
         if (!requestMappings.get(httpMethod).contains(path)) {
-            //TODO : 404
-            throw new RuntimeException("404");
+            throw new RuntimeException("처리할 수 없는 요청입니다.");
         }
         Method method = requestMappings.get(httpMethod).find(path);
-        //TODO : 싱글톤으로 수정?
-        return (HttpResponse) method.invoke(new APIHandler(), httpRequest);
+        return (HttpResponse) method.invoke(this, httpRequest);
     }
 
     @HandleRequest(path = "/user/create", httpMethod = HttpMethod.POST)
