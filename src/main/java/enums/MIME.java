@@ -1,4 +1,6 @@
-package webserver;
+package enums;
+
+import exceptions.HttpRequestFormatException;
 
 public enum MIME {
     HTML("text/html"),
@@ -22,5 +24,15 @@ public enum MIME {
 
     public boolean isTemplate() {
         return this.equals(MIME.HTML) || this.equals(MIME.TXT);
+    }
+
+    public static MIME from(String mimeString) {
+        MIME mime;
+        try {
+            mime = valueOf(mimeString);
+        } catch (IllegalArgumentException e) {
+            throw new HttpRequestFormatException("지원하지 않는 MIME입니다.");
+        }
+        return mime;
     }
 }

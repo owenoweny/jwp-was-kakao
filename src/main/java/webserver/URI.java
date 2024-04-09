@@ -1,17 +1,13 @@
 package webserver;
 
+import enums.MIME;
 import exceptions.HttpRequestFormatException;
 
 import java.util.Map;
 import java.util.Optional;
 
 public class URI {
-    public static final String QUERY_SEPARATOR = "?";
-    public static final String PARAMETER_SEPARATOR = "&";
-    public static final String SPACE = " ";
-    public static final String HEADER_SEPARATOR = ": ";
-    public static final String PARAMETER_EQUAL_SIGN = "=";
-    public static final String EXTENSION_SEPARATOR = ".";
+
 
     private final String path;
     private final Map<String, String> parameters;

@@ -1,5 +1,6 @@
 package webserver;
 
+import enums.MIME;
 import utils.FileIoUtils;
 
 import java.io.IOException;

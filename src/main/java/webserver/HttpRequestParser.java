@@ -1,5 +1,6 @@
 package webserver;
 
+import enums.MIME;
 import utils.HttpBodyParser;
 import utils.IOUtils;
 
@@ -8,36 +9,26 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static webserver.URI.*;
+public class HttpRequestParser {
+    public static final String QUERY_SEPARATOR = "?";
+    public static final String PARAMETER_SEPARATOR = "&";
+    public static final String SPACE = " ";
+    public static final String HEADER_SEPARATOR = ": ";
+    public static final String PARAMETER_EQUAL_SIGN = "=";
+    public static final String EXTENSION_SEPARATOR = ".";
 
-public class HttpHeaderParsingUtils {
     public static HttpRequest parse(BufferedReader bufferedReader) throws IOException {
-        String[] f = bufferedReader.readLine().split(" ");
-        HttpMethod httpMethod = HttpMethod.valueOf(f[0]);
-        String uriString = f[1];
-        String protocol = f[2];
+        String[] requestLine = bufferedReader.readLine().split(SPACE);
+        HttpMethod httpMethod = HttpMethod.from(requestLine[0]);
+        String uriString = requestLine[1];
+        String protocol = requestLine[2];
 
-        String line;
-        Map<String, String> headers = new HashMap<>();
-
-        while (!"".equals(line = bufferedReader.readLine()) && line != null) {
-            String[] header = line.split(": ");
-            headers.put(header[0], header[1]);
-        }
-
-        Map<String, String> body = Map.of();
-
-        // (body의 존재 - Content-Type 필드의 존재) -> 필요충분조건?? 표준에선 있어야댐
-        if (headers.containsKey("Content-Type") && headers.containsKey("Content-Length")) {
-            //TODO: Content-Length 정수 파싱 예외 처리...
-            String contentType = String.valueOf(headers.get("Content-Type"));
-            int contentLength = Integer.parseInt(headers.get("Content-Length"));
-            String bodyString = IOUtils.readData(bufferedReader, contentLength);
-            body = HttpBodyParser.from(contentType).parse(bodyString);
-        }
+        Map<String, String> headers = parseHeader(bufferedReader);
+        Map<String, String> body = parseBody(bufferedReader, headers);
+        URI uri = parseURI(uriString);
 
         return new HttpRequest.Builder()
-                .uri(parseURI(uriString))
+                .uri(uri)
                 .body(body)
                 .protocol(protocol)
                 .headers(headers)
@@ -45,37 +36,27 @@ public class HttpHeaderParsingUtils {
                 .build();
     }
 
-    public static HttpRequest parse(String httpRequestString) {
-        StringTokenizer stringTokenizer = new StringTokenizer(httpRequestString, "\n");
-        String[] f = stringTokenizer.nextToken().split(" ");
-        HttpMethod httpMethod = HttpMethod.valueOf(f[0]);
-        String uriString = f[1];
+    private static Map<String, String> parseBody(BufferedReader bufferedReader, Map<String, String> headers) throws IOException {
+        Map<String, String> body = Map.of();
 
-        String protocol = f[2];
+        if (headers.containsKey("Content-Type") && headers.containsKey("Content-Length")) {
+            String contentType = String.valueOf(headers.get("Content-Type"));
+            int contentLength = Integer.parseInt(headers.get("Content-Length"));
+            String bodyString = IOUtils.readData(bufferedReader, contentLength);
+            body = HttpBodyParser.from(contentType).parse(bodyString);
+        }
+        return body;
+    }
 
-        String tmp;
+    private static Map<String, String> parseHeader(BufferedReader bufferedReader) throws IOException {
         Map<String, String> headers = new HashMap<>();
 
-        while (stringTokenizer.hasMoreTokens() && !(tmp = stringTokenizer.nextToken()).isEmpty()) {
-            String[] header = tmp.split(": ");
+        String line;
+        while (!"".equals(line = bufferedReader.readLine()) && line != null) {
+            String[] header = line.split(HEADER_SEPARATOR);
             headers.put(header[0], header[1]);
         }
-
-        Map<String, String> body = Map.of();
-        
-        // (body의 존재 - Content-Type 필드의 존재) -> 필요충분조건?? 표준에선 있어야댐
-        if (headers.containsKey("Content-Type")) {
-            String bodyString = body(stringTokenizer);
-            body = HttpBodyParser.from(String.valueOf(headers.get("Content-Type"))).parse(bodyString);
-        }
-
-        return new HttpRequest.Builder()
-                .uri(parseURI(uriString))
-                .body(body)
-                .protocol(protocol)
-                .headers(headers)
-                .httpMethod(httpMethod)
-                .build();
+        return headers;
     }
 
     private static URI parseURI(String stringURI) {
@@ -91,7 +72,7 @@ public class HttpHeaderParsingUtils {
             stringURI = removeQuery(stringURI);
             String extension = parseExtension(stringURI);
             //TODO : 지원하지 않는 MIME인 경우에 대한 예외 처리
-            return new URI(path, parameters, MIME.valueOf(extension.toUpperCase()));
+            return new URI(path, parameters, MIME.from(extension.toUpperCase()));
         }
         return new URI(path, parameters);
     }
@@ -118,18 +99,14 @@ public class HttpHeaderParsingUtils {
 
     private static String removeQuery(String path) {
         int index = path.indexOf("?");
-        String result;
         if (index != -1) {
-            result = path.substring(0, index);
-        } else {
-            result = path;
+            return path.substring(0, index);
         }
-        return result;
+        return path;
     }
 
     private static List<String> parseStringToList(String requestLine, String separator) {
         String[] requestLineArray = requestLine.split(separator);
-
         return Arrays.stream(requestLineArray).collect(Collectors.toList());
     }
 
@@ -139,21 +116,5 @@ public class HttpHeaderParsingUtils {
 
     private static boolean hasQuery(String stringURI) {
         return stringURI.contains(QUERY_SEPARATOR);
-    }
-
-
-    //TODO : rename
-    public static String body(StringTokenizer st) {
-        StringBuilder sb = new StringBuilder();
-
-        while (st.hasMoreTokens()) {
-            sb.append(st.nextToken());
-
-            if (st.hasMoreTokens()) {
-                sb.append(" "); // add space character
-            }
-        }
-
-        return sb.toString();
     }
 }
