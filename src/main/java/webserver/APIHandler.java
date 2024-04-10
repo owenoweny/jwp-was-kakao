@@ -41,6 +41,11 @@ public class APIHandler {
         return (HttpResponse) method.invoke(this, httpRequest);
     }
 
+    @HandleRequest(path = "/", httpMethod = HttpMethod.GET)
+    public HttpResponse ping(HttpRequest httpRequest) {
+        return HttpResponse.ok("hello world");
+    }
+
     @HandleRequest(path = "/user/create", httpMethod = HttpMethod.POST)
     public HttpResponse saveUser(HttpRequest httpRequest) {
         Map<String, String> parameters = httpRequest.getBody();

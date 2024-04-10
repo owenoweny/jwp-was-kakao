@@ -18,6 +18,10 @@ public class HttpResponse {
         return new HttpResponse(StatusCode.FOUND, new byte[0], Map.of(LOCATION_KEY, redirectURI));
     }
 
+    public static HttpResponse ok(String body) {
+        return new HttpResponse(StatusCode.OK, body.getBytes(), Map.of());
+    }
+
     public static HttpResponse staticResource(byte[] body, MIME mime) {
         Map<String, String> headers = Map.of(CONTENT_TYPE_KEY, mime.contentType, CONTENT_LENGTH_KEY, Integer.toString(body.length));
         return new HttpResponse(StatusCode.OK, body, headers);
