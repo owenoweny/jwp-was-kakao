@@ -28,7 +28,7 @@ public class RequestHandler implements Runnable {
             HttpRequest httpRequest = HttpRequestParser.parse(new BufferedReader(new InputStreamReader(in)));
 
             HttpResponse httpResponse;
-            if (httpRequest.getUri().hasExtension()) {
+            if (!httpRequest.getUri().hasExtension()) {
                 httpResponse = apiHandler.handle(httpRequest);
             } else {
                 httpResponse = resourceHandler.handle(httpRequest);
