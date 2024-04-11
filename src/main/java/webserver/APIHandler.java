@@ -13,18 +13,25 @@ public class APIHandler {
     private static Map<HttpMethod, URIHandlerMapping> requestMappings;
 
     static {
+        initializeRequestMapping();
+        fillMethod();
+    }
+
+    private static void fillMethod() {
+        Method[] methods = APIHandler.class.getDeclaredMethods();
+        for (Method method : methods) {
+            addMapping(method);
+        }
+    }
+
+    private static void initializeRequestMapping() {
         requestMappings = new HashMap<>();
         for (HttpMethod httpMethod : HttpMethod.values()) {
             requestMappings.put(httpMethod, new URIHandlerMapping());
         }
-        Method[] methods = APIHandler.class.getDeclaredMethods();
-
-        for (Method method : methods) {
-            add(method);
-        }
     }
 
-    private static void add(Method method) {
+    private static void addMapping(Method method) {
         if (method.isAnnotationPresent(HandleRequest.class)) {
             HandleRequest handleRequest = method.getAnnotation(HandleRequest.class);
             requestMappings.get(handleRequest.httpMethod()).addMapping(handleRequest.path(), method);
