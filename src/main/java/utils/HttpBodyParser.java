@@ -5,7 +5,7 @@ import java.util.Map;
 public class HttpBodyParser {
     private final HttpBodyParsingStrategy httpBodyParsingStrategy;
 
-    public HttpBodyParser(HttpBodyParsingStrategy httpBodyParsingStrategy) {
+    private HttpBodyParser(HttpBodyParsingStrategy httpBodyParsingStrategy) {
         this.httpBodyParsingStrategy = httpBodyParsingStrategy;
     }
 
