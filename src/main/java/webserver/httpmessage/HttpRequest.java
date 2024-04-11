@@ -37,7 +37,7 @@ public class HttpRequest {
         String protocol = requestLine[2];
         URI uri = URI.from(uriString);
 
-        HttpHeaders headers = HttpHeaders.from(parseHeader(bufferedReader));
+        HttpHeaders headers = parseHeader(bufferedReader);
         HttpRequestBody httpRequestBody = parseBody(bufferedReader, headers);
 
         return new HttpRequest(uri, httpMethod, protocol, headers, httpRequestBody);
@@ -73,12 +73,12 @@ public class HttpRequest {
         return body;
     }
 
-    private static String parseHeader(BufferedReader bufferedReader) throws IOException {
+    private static HttpHeaders parseHeader(BufferedReader bufferedReader) throws IOException {
         StringBuilder result = new StringBuilder();
         String line;
         while (!"".equals(line = bufferedReader.readLine()) && line != null) {
             result.append(line).append("\n");
         }
-        return result.toString();
+        return HttpHeaders.from(result.toString());
     }
 }
