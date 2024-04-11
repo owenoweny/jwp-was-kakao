@@ -8,7 +8,7 @@ import webserver.httpmessage.HttpResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class ResourceHandler {
+public class StaticResourceHandler {
     public static final String STATIC_RESOURCE_PATH = "./static";
     public static final String TEMPLATES_RESOURCE_PATH = "./templates";
 

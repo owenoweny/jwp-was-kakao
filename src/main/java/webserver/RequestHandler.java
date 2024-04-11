@@ -14,12 +14,12 @@ public class RequestHandler implements Runnable {
     private Socket connection;
 
     private APIHandler apiHandler;
-    private ResourceHandler resourceHandler;
+    private StaticResourceHandler staticResourceHandler;
 
-    public RequestHandler(Socket connection, APIHandler apiHandler, ResourceHandler resourceHandler) {
+    public RequestHandler(Socket connection, APIHandler apiHandler, StaticResourceHandler staticResourceHandler) {
         this.connection = connection;
         this.apiHandler = apiHandler;
-        this.resourceHandler = resourceHandler;
+        this.staticResourceHandler = staticResourceHandler;
     }
 
     public void run() {
@@ -32,7 +32,7 @@ public class RequestHandler implements Runnable {
             if (!httpRequest.getUri().hasExtension()) {
                 httpResponse = apiHandler.handle(httpRequest);
             } else {
-                httpResponse = resourceHandler.handle(httpRequest);
+                httpResponse = staticResourceHandler.handle(httpRequest);
             }
 
             DataOutputStream dos = new DataOutputStream(out);

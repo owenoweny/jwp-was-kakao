@@ -25,7 +25,7 @@ public class WebApplicationServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection, new APIHandler(), new ResourceHandler()));
+                Thread thread = new Thread(new RequestHandler(connection, new APIHandler(), new StaticResourceHandler()));
                 thread.start();
             }
         }
