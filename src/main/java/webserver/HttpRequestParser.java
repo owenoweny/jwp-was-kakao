@@ -33,13 +33,7 @@ public class HttpRequestParser {
         Map<String, String> body = parseBody(bufferedReader, headers);
         URI uri = parseURI(uriString);
 
-        return new HttpRequest.Builder()
-                .uri(uri)
-                .body(body)
-                .protocol(protocol)
-                .headers(headers)
-                .httpMethod(httpMethod)
-                .build();
+        return new HttpRequest(uri, httpMethod, protocol, headers, body);
     }
 
     private static Map<String, String> parseBody(BufferedReader bufferedReader, Map<String, String> headers) throws IOException {

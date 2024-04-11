@@ -22,51 +22,6 @@ public class HttpRequest {
         this.body = body;
     }
 
-    private HttpRequest(Builder builder) {
-        this(builder.uri,
-                builder.httpMethod,
-                builder.protocol,
-                builder.headers,
-                builder.body);
-    }
-
-    public static class Builder {
-        private URI uri;
-        private String protocol;
-        private HttpMethod httpMethod;
-        private Map<String, String> headers;
-        private Map<String, String> body;
-
-        public Builder uri(URI uri) {
-            this.uri = uri;
-            return this;
-        }
-
-        public Builder protocol(String protocol) {
-            this.protocol = protocol;
-            return this;
-        }
-
-        public Builder httpMethod(HttpMethod httpMethod) {
-            this.httpMethod = httpMethod;
-            return this;
-        }
-
-        public Builder headers(Map<String, String> headers) {
-            this.headers = headers;
-            return this;
-        }
-
-        public Builder body(Map<String, String> body) {
-            this.body = body;
-            return this;
-        }
-
-        public HttpRequest build() {
-            return new HttpRequest(this);
-        }
-    }
-
     public URI getUri() {
         return uri;
     }
