@@ -1,8 +1,6 @@
 package webserver;
 
 import annotations.HandleRequest;
-import db.DataBase;
-import model.User;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

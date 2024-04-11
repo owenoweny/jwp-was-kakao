@@ -20,12 +20,12 @@ public class RequestProcessor {
 
     @HandleRequest(path = "/user/create", httpMethod = HttpMethod.POST)
     public HttpResponse saveUser(HttpRequest httpRequest) {
-        Map<String, String> parameters = httpRequest.getBody();
+        HttpRequestBody body = httpRequest.getBody();
         //TODO : NPE 예외처리
-        String name = parameters.get("name");
-        String email = parameters.get("email");
-        String password = parameters.get("password");
-        String userId = parameters.get("userId");
+        String name = body.get("name");
+        String email = body.get("email");
+        String password = body.get("password");
+        String userId = body.get("userId");
 
         if (DataBase.findUserById(userId) != null) {
             throw new RuntimeException("이미 존재하는 회원입니다.");
