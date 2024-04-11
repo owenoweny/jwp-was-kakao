@@ -6,6 +6,8 @@ import utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,7 +67,7 @@ public class HttpRequestParser {
 
     private static URI parseURI(String stringURI) {
         Map<String, String> parameters = new HashMap<>();
-        String path = stringURI;
+        String path = URLDecoder.decode(stringURI, StandardCharsets.UTF_8);
 
         if (hasQuery(stringURI)) {
             int queryStartIndex = stringURI.indexOf(QUERY_SEPARATOR);
