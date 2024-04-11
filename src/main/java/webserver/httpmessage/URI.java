@@ -1,4 +1,4 @@
-package webserver;
+package webserver.httpmessage;
 
 import enums.MIME;
 import exceptions.HttpRequestFormatException;
@@ -92,7 +92,6 @@ public class URI {
     private static boolean hasQuery(String stringURI) {
         return stringURI.contains(QUERY_SEPARATOR);
     }
-
 
     public String getPath() {
         return path;

@@ -2,6 +2,8 @@ package webserver;
 
 import enums.MIME;
 import utils.FileIoUtils;
+import webserver.httpmessage.HttpRequest;
+import webserver.httpmessage.HttpResponse;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

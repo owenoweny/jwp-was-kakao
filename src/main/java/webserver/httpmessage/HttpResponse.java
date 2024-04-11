@@ -1,4 +1,4 @@
-package webserver;
+package webserver.httpmessage;
 
 import enums.MIME;
 import enums.StatusCode;
@@ -7,7 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import static webserver.HttpRequest.*;
+import static webserver.httpmessage.HttpRequest.*;
 
 public class HttpResponse {
     private StatusCode statusCode;

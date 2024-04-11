@@ -1,4 +1,4 @@
-package webserver;
+package webserver.httpmessage;
 
 import utils.HttpBodyParser;
 

@@ -1,15 +1,13 @@
-package webserver;
+package webserver.httpmessage;
 
 import enums.MIME;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static webserver.HttpRequest.*;
+import static webserver.httpmessage.HttpRequest.*;
 
 public class HttpHeaders {
     private Map<String, String> values;
