@@ -52,7 +52,11 @@ public class RequestProcessor {
             return HttpResponse.found("http://localhost:8080/user/login_failed.html");
         }
 
-        HttpCookie httpCookie = HttpCookie.of(HttpCookie.SESSION_KEY, UUID.randomUUID().toString());
+        Session session = SessionManager.createSession();
+        session.addAttribute("userId", userId);
+        session.addAttribute("password", password);
+
+        HttpCookie httpCookie = HttpCookie.of(HttpCookie.SESSION_KEY, session.getSessionId());
         HttpResponse httpResponse = HttpResponse.found(INDEX_REDIRECT_URI);
         httpResponse.addCookie(httpCookie, "/");
         return httpResponse;
