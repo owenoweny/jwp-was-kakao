@@ -8,8 +8,11 @@ import webserver.httpmessage.HttpRequest;
 import webserver.httpmessage.HttpRequestBody;
 import webserver.httpmessage.HttpResponse;
 
+import java.util.UUID;
+
 public class RequestProcessor {
     private static final RequestProcessor REQUEST_PROCESSOR_INSTANCE = new RequestProcessor();
+    public static final String INDEX_REDIRECT_URI = "http://localhost:8080/index.html";
 
     public static RequestProcessor getInstance() {
         return REQUEST_PROCESSOR_INSTANCE;
@@ -35,5 +38,23 @@ public class RequestProcessor {
         DataBase.addUser(new User(userId, password, name, email));
 
         return HttpResponse.found("http://localhost:8080/index.html");
+    }
+
+    @HandleRequest(path = "/user/login", httpMethod = HttpMethod.POST)
+    public HttpResponse login(HttpRequest httpRequest) {
+        HttpRequestBody body = httpRequest.getBody();
+        //TODO : NPE 예외처리
+        String userId = body.get("userId");
+        String password = body.get("password");
+
+        User user = DataBase.findUserById(userId);
+        if (user == null || !user.getPassword().equals(password)) {
+            return HttpResponse.found("http://localhost:8080/user/login_failed.html");
+        }
+
+        HttpCookie httpCookie = HttpCookie.of(HttpCookie.SESSION_KEY, UUID.randomUUID().toString());
+        HttpResponse httpResponse = HttpResponse.found(INDEX_REDIRECT_URI);
+        httpResponse.addCookie(httpCookie, "/");
+        return httpResponse;
     }
 }

@@ -17,7 +17,7 @@ public class HttpHeaders {
     }
 
     public HttpHeaders() {
-        this.values = Map.of();
+        this.values = new HashMap<>();
     }
 
     public static HttpHeaders from(String headerString) {
@@ -32,11 +32,14 @@ public class HttpHeaders {
     }
 
     public static HttpHeaders retrieveResponseHeaders(int lengthOfBody, MIME mime) {
-        Map<String, String> headerValues = Map.of(CONTENT_TYPE_KEY,
-                mime.contentType,
-                CONTENT_LENGTH_KEY,
-                Integer.toString(lengthOfBody));
-        return new HttpHeaders(headerValues);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(CONTENT_TYPE_KEY, mime.contentType);
+        headers.put(CONTENT_LENGTH_KEY, Integer.toString(lengthOfBody));
+        return new HttpHeaders(headers);
+    }
+
+    public void addHeader(String key, String value) {
+        values.put(key, value);
     }
 
     public byte[] formatHttpMessage() {

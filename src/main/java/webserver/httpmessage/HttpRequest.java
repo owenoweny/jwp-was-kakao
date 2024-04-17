@@ -12,14 +12,13 @@ public class HttpRequest {
     public static final String CONTENT_LENGTH_KEY = "Content-Length";
     public static final String LOCATION_KEY = "Location";
     public static final String HEADER_SEPARATOR = ": ";
-
     private final URI uri;
     private final HttpMethod httpMethod;
     private final String protocol;
     private final HttpHeaders headers;
     private final HttpRequestBody body;
 
-    public HttpRequest(URI uri,
+    private HttpRequest(URI uri,
                        HttpMethod httpMethod, String protocol,
                        HttpHeaders headers,
                        HttpRequestBody body) {
