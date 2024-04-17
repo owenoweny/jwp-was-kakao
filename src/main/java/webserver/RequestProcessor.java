@@ -29,6 +29,7 @@ public class RequestProcessor {
 
     @HandleRequest(path = "/user/create", httpMethod = HttpMethod.POST)
     public HttpResponse saveUser(HttpRequest httpRequest) {
+        validateSaveUserBody(httpRequest);
         HttpRequestBody body = httpRequest.getBody();
         //TODO : NPE 예외처리
         String name = body.get("name");
@@ -42,6 +43,16 @@ public class RequestProcessor {
         DataBase.addUser(new User(userId, password, name, email));
 
         return HttpResponse.found("http://localhost:8080/index.html");
+    }
+
+    private void validateSaveUserBody(HttpRequest httpRequest) {
+        HttpRequestBody body = httpRequest.getBody();
+        if (!body.contains("userId")
+                || !body.contains("password")
+                || !body.contains("name")
+                || !body.contains("email")) {
+            throw new RuntimeException("회원 정보가 유효하지 않습니다.");
+        }
     }
 
     @HandleRequest(path = "/user/login", httpMethod = HttpMethod.POST)

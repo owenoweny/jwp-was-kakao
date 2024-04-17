@@ -23,4 +23,8 @@ public class HttpRequestBody {
     public String get(String key) {
         return values.get(key);
     }
+
+    public boolean contains(String key) {
+        return values.containsKey(key);
+    }
 }

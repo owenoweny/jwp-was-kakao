@@ -1,6 +1,7 @@
 package db;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -16,6 +17,10 @@ public class DataBase {
 
     public static User findUserById(String userId) {
         return users.get(userId);
+    }
+
+    public static void deleteAll() {
+        users = new HashMap<>();
     }
 
     public static Collection<User> findAll() {

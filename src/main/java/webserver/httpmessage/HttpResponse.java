@@ -64,4 +64,16 @@ public class HttpResponse {
             System.out.println(e.getMessage());
         }
     }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public byte[] getBody() {
+        return body;
+    }
+
+    public HttpHeaders getHeaders() {
+        return headers;
+    }
 }
