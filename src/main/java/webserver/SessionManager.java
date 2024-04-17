@@ -17,4 +17,8 @@ public class SessionManager {
     public static Session findSession(String sessionId) {
         return sessions.get(sessionId);
     }
+
+    public static boolean hasSession(String sessionId) {
+        return sessions.containsKey(sessionId);
+    }
 }

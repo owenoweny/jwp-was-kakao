@@ -27,6 +27,10 @@ public class HttpResponse {
         return new HttpResponse(StatusCode.OK, body.getBytes(), new HttpHeaders());
     }
 
+    public static HttpResponse ok(byte[] body) {
+        return new HttpResponse(StatusCode.OK, body, new HttpHeaders());
+    }
+
     public static HttpResponse staticResource(byte[] body, MIME mime) {
         HttpHeaders httpHeaders = HttpHeaders.retrieveResponseHeaders(body.length, mime);
         return new HttpResponse(StatusCode.OK, body, httpHeaders);

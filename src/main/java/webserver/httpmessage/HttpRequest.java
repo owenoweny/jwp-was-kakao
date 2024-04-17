@@ -1,6 +1,7 @@
 package webserver.httpmessage;
 
 import utils.IOUtils;
+import webserver.HttpCookie;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,16 +17,20 @@ public class HttpRequest {
     private final HttpMethod httpMethod;
     private final String protocol;
     private final HttpHeaders headers;
+    private final HttpCookie httpCookie;
     private final HttpRequestBody body;
 
     private HttpRequest(URI uri,
-                       HttpMethod httpMethod, String protocol,
-                       HttpHeaders headers,
-                       HttpRequestBody body) {
+                        HttpMethod httpMethod,
+                        String protocol,
+                        HttpHeaders headers,
+                        HttpCookie httpCookie,
+                        HttpRequestBody body) {
         this.uri = uri;
         this.httpMethod = httpMethod;
         this.protocol = protocol;
         this.headers = headers;
+        this.httpCookie = httpCookie;
         this.body = body;
     }
 
@@ -37,9 +42,10 @@ public class HttpRequest {
         URI uri = URI.from(uriString);
 
         HttpHeaders headers = parseHeader(bufferedReader);
+        HttpCookie httpCookie = HttpCookie.from(headers);
         HttpRequestBody httpRequestBody = parseBody(bufferedReader, headers);
 
-        return new HttpRequest(uri, httpMethod, protocol, headers, httpRequestBody);
+        return new HttpRequest(uri, httpMethod, protocol, headers, httpCookie, httpRequestBody);
     }
 
     private static HttpRequestBody parseBody(BufferedReader bufferedReader, HttpHeaders headers) throws IOException {
@@ -70,6 +76,10 @@ public class HttpRequest {
 
     public HttpRequestBody getBody() {
         return body;
+    }
+
+    public HttpCookie getHttpCookie() {
+        return httpCookie;
     }
 
     private static HttpHeaders parseHeader(BufferedReader bufferedReader) throws IOException {

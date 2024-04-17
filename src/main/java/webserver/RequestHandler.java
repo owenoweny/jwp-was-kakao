@@ -39,6 +39,7 @@ public class RequestHandler implements Runnable {
             httpResponse.send(dos);
             //TODO: 예외 처리
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(e.getMessage());
         }
     }

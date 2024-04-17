@@ -3,12 +3,16 @@ package webserver;
 import annotations.HandleRequest;
 import db.DataBase;
 import model.User;
+import utils.FileIoUtils;
 import webserver.httpmessage.HttpMethod;
 import webserver.httpmessage.HttpRequest;
 import webserver.httpmessage.HttpRequestBody;
 import webserver.httpmessage.HttpResponse;
 
-import java.util.UUID;
+import java.io.IOException;
+import java.util.Collection;
+
+import static webserver.HttpCookie.SESSION_KEY;
 
 public class RequestProcessor {
     private static final RequestProcessor REQUEST_PROCESSOR_INSTANCE = new RequestProcessor();
@@ -56,9 +60,27 @@ public class RequestProcessor {
         session.addAttribute("userId", userId);
         session.addAttribute("password", password);
 
-        HttpCookie httpCookie = HttpCookie.of(HttpCookie.SESSION_KEY, session.getSessionId());
+        HttpCookie httpCookie = HttpCookie.of(SESSION_KEY, session.getSessionId());
         HttpResponse httpResponse = HttpResponse.found(INDEX_REDIRECT_URI);
         httpResponse.addCookie(httpCookie, "/");
         return httpResponse;
+    }
+
+    @HandleRequest(path = "/user/list", httpMethod = HttpMethod.GET)
+    public HttpResponse list(HttpRequest httpRequest) throws IOException {
+        checkLogin(httpRequest);
+
+        Collection<User> users = DataBase.findAll();
+        byte[] body = FileIoUtils.loadFileFromClassPath("/user/list", users);
+
+        return HttpResponse.ok(body);
+    }
+
+    private void checkLogin(HttpRequest httpRequest) {
+        String sessionId = httpRequest.getHttpCookie().get(SESSION_KEY);
+
+        if (sessionId.isEmpty() || !SessionManager.hasSession(sessionId)) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
     }
 }
